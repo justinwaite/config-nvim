@@ -944,6 +944,7 @@ require('lazy').setup({
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          { name = 'npm', keyword_length = 4 },
         },
         formatting = {
           format = lspkind.cmp_format {
