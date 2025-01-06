@@ -409,10 +409,12 @@ require('lazy').setup({
               ['<C-q>'] = actions.smart_send_to_qflist,
               ['<C-p>'] = actionsLayout.toggle_preview,
               ['<c-enter>'] = 'to_fuzzy_refine',
+              ['<c-d>'] = 'delete_buffer',
             },
             n = {
               ['<C-q>'] = actions.smart_send_to_qflist,
               ['<C-p>'] = actionsLayout.toggle_preview,
+              ['<c-d>'] = 'delete_buffer',
             },
           },
 
@@ -445,7 +447,7 @@ require('lazy').setup({
         pickers = {
           -- Allow for searching hidden files, excluding .git
           find_files = {
-            find_command = { 'rg', '--files', '--hidden', '-g', '!.git' },
+            find_command = { 'rg', '--files', '--hidden', '-g', '!.git', '--ignore-file', '~/.rgignore' },
           },
 
           -- Wider display for file names and smart path display
