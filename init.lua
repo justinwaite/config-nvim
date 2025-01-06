@@ -214,6 +214,17 @@ vim.filetype.add {
   },
 }
 
+-- Add :DiffOrig command for comparing current buffer to the file it was loaded from
+vim.api.nvim_create_user_command('DiffOrig', function()
+  vim.cmd 'vertical new | setlocal bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis'
+end, {})
+
+-- Add ClearDiff command to close diff window
+vim.api.nvim_create_user_command('ClearDiff', function()
+  vim.cmd 'diffoff!'
+  vim.cmd 'only'
+end, {})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
