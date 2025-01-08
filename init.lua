@@ -420,12 +420,12 @@ require('lazy').setup({
               ['<C-q>'] = actions.smart_send_to_qflist,
               ['<C-p>'] = actionsLayout.toggle_preview,
               ['<c-enter>'] = 'to_fuzzy_refine',
-              ['<c-d>'] = 'delete_buffer',
+              ['<c-x>'] = 'delete_buffer',
             },
             n = {
               ['<C-q>'] = actions.smart_send_to_qflist,
               ['<C-p>'] = actionsLayout.toggle_preview,
-              ['<c-d>'] = 'delete_buffer',
+              ['<c-x>'] = 'delete_buffer',
             },
           },
 
@@ -765,6 +765,7 @@ require('lazy').setup({
         'css-lsp',
         'css-variables-language-server',
         'eslint-lsp',
+        -- 'sql-formatter',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -828,6 +829,7 @@ require('lazy').setup({
         yaml = { 'prettier', stop_after_first = true },
         markdown = { 'prettier', stop_after_first = true },
         go = { 'goimports', 'gofmt' },
+        -- sql = { 'sql_formatter' },
       },
       formatters = {
         prettier = {
@@ -966,24 +968,6 @@ require('lazy').setup({
           },
         },
       }
-    end,
-  },
-
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'rose-pine/neovim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      -- vim.cmd.colorscheme 'rose-pine'
-
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
     end,
   },
 
