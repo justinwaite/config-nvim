@@ -15,8 +15,11 @@ return {
       -- vim.cmd.colorscheme 'rose-pine'
       require('everforest').setup {
         background = 'hard',
-        float_style = 'dim',
+        float_style = 'bright',
         ui_contrast = 'high',
+        colours_override = function(palette)
+          palette.bg0 = palette.bg_dim
+        end,
       }
 
       -- You can configure highlights by doing something like:

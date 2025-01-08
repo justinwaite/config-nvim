@@ -765,7 +765,7 @@ require('lazy').setup({
         'css-lsp',
         'css-variables-language-server',
         'eslint-lsp',
-        -- 'sql-formatter',
+        'sql-formatter',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -804,7 +804,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { c = true, cpp = true, sql = true }
         local lsp_format_opt
         if disable_filetypes[vim.bo[bufnr].filetype] then
           lsp_format_opt = 'never'
@@ -829,7 +829,7 @@ require('lazy').setup({
         yaml = { 'prettier', stop_after_first = true },
         markdown = { 'prettier', stop_after_first = true },
         go = { 'goimports', 'gofmt' },
-        -- sql = { 'sql_formatter' },
+        sql = { 'sql_formatter' },
       },
       formatters = {
         prettier = {
