@@ -158,6 +158,8 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- Draw a line on col 80 to help keep lines short
+vim.opt.colorcolumn = '80'
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -420,12 +422,12 @@ require('lazy').setup({
               ['<C-q>'] = actions.smart_send_to_qflist,
               ['<C-p>'] = actionsLayout.toggle_preview,
               ['<c-enter>'] = 'to_fuzzy_refine',
-              ['<c-x>'] = 'delete_buffer',
+              ['<C-b>'] = 'delete_buffer',
             },
             n = {
               ['<C-q>'] = actions.smart_send_to_qflist,
               ['<C-p>'] = actionsLayout.toggle_preview,
-              ['<c-x>'] = 'delete_buffer',
+              ['<C-b>'] = 'delete_buffer',
             },
           },
 
@@ -804,17 +806,30 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true, sql = true }
+        local disable_lsp_fallback_filetypes = { c = true, cpp = true }
         local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
+        if disable_lsp_fallback_filetypes[vim.bo[bufnr].filetype] then
           lsp_format_opt = 'never'
         else
           lsp_format_opt = 'fallback'
         end
-        return {
+
+        -- Disable formatting on save entirely for certain filetypes
+        -- I disable for sql since there are many dialects and times where you
+        -- just don't want it.
+        local disable_format_on_save_filetypes = { sql = true }
+        local dry_run = false
+        if disable_format_on_save_filetypes[vim.bo[bufnr].filetype] then
+          dry_run = true
+        end
+
+        local options = {
           timeout_ms = 500,
           lsp_format = lsp_format_opt,
+          dry_run = dry_run,
         }
+
+        return options
       end,
       formatters_by_ft = {
         lua = { 'stylua' },

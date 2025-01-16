@@ -18,7 +18,9 @@ return {
         float_style = 'bright',
         ui_contrast = 'high',
         colours_override = function(palette)
-          palette.bg0 = palette.bg_dim
+          if vim.g.everforestBackground == 'dim' then
+            palette.bg0 = palette.bg_dim
+          end
         end,
       }
 
@@ -35,12 +37,14 @@ return {
     opts = {
       update_interval = 1000,
       set_dark_mode = function()
+        vim.g.everforestBackground = 'dim'
         vim.api.nvim_set_option_value('background', 'dark', {})
         vim.cmd 'colorscheme everforest'
       end,
       set_light_mode = function()
-        vim.api.nvim_set_option_value('background', 'light', {})
-        vim.cmd 'colorscheme flexoki-light'
+        vim.g.everforestBackground = 'normal'
+        vim.api.nvim_set_option_value('background', 'dark', {})
+        vim.cmd 'colorscheme everforest'
       end,
       fallback = 'everforest',
     },
