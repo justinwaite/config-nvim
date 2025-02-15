@@ -35,11 +35,11 @@ vim.opt.inccommand = 'split'
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 if vim.g.vscode then
-  local vscode = require 'vscode'
+  -- local vscode = require 'vscode'
 
-  vim.keymap.set('n', '<leader>f', function()
-    vscode.action 'editor.action.formatDocument'
-  end, { desc = 'Format the document' })
+  -- vim.keymap.set('n', '<leader>f', function()
+  --   vscode.action 'editor.action.formatDocument'
+  -- end, { desc = 'Format the document' })
 
   -- vim.keymap.set('n', '<leader>ca', function()
   --   vscode.action 'editor.action.autoFix'
@@ -66,6 +66,18 @@ if vim.g.vscode then
     end
   end ---@diagnostic disable-next-line: undefined-field
   vim.opt.rtp:prepend(lazypath)
+
+  local vscode_neovim = require 'vscode-neovim'
+
+  -- Set vscode context for full mode. This helps detect additional modes like operator-pending
+  vim.api.nvim_create_autocmd({ 'VimEnter', 'ModeChanged' }, {
+    callback = function(args)
+      local current_mode = vim.fn.mode(1)
+      vscode_neovim.call('setContext', {
+        args = { 'neovim.fullMode', current_mode },
+      })
+    end,
+  })
 
   require('lazy').setup {
     spec = {
