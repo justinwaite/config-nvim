@@ -7,26 +7,9 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
--- [[ Setting options ]]
--- See `:help vim.opt`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
-
--- Make line numbers default
-vim.opt.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
-
--- Enable mouse mode, can be useful for resizing splits for example!
-vim.opt.mouse = 'a'
-
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
-
--- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
@@ -55,18 +38,6 @@ if vim.g.vscode then
   -- end, { desc = 'Open the quick open menu' })
   --
 
-  -- [[ Install `lazy.nvim` plugin manager ]]
-  --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
-  local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
-  if not (vim.uv or vim.loop).fs_stat(lazypath) then
-    local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
-    local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
-    if vim.v.shell_error ~= 0 then
-      error('Error cloning lazy.nvim:\n' .. out)
-    end
-  end ---@diagnostic disable-next-line: undefined-field
-  vim.opt.rtp:prepend(lazypath)
-
   local vscode_neovim = require 'vscode-neovim'
 
   -- Set vscode context for full mode. This helps detect additional modes like operator-pending
@@ -79,15 +50,51 @@ if vim.g.vscode then
     end,
   })
 
+  -- [[ Install `lazy.nvim` plugin manager ]]
+  --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
+  local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+  if not (vim.uv or vim.loop).fs_stat(lazypath) then
+    local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
+    local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+    if vim.v.shell_error ~= 0 then
+      error('Error cloning lazy.nvim:\n' .. out)
+    end
+  end ---@diagnostic disable-next-line: undefined-field
+  vim.opt.rtp:prepend(lazypath)
+
   require('lazy').setup {
     spec = {
       { 'LazyVim/LazyVim', import = 'lazyvim.plugins' },
-      -- { import = 'lazyvim.plugins.extras.coding.copilot' },
+      { import = 'lazyvim.plugins.extras.vscode' },
+      { 'echasnovski/mini.surround', opts = {} },
+      -- { import = 'lazyvim.plugins.extras.coding.mini-surround', enabled = true, vscode = true },
+      { 'folke/flash.nvim', enabled = false },
+    },
+    defaults = {
+      -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
+      -- If you know what you're doing, you can set this to `true` to have all your custom plugins lazy-loaded by default.
+      lazy = false,
+      -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
+      -- have outdated releases, which may break your Neovim install.
+      version = false, -- always use the latest git commit
+      -- version = "*", -- try installing the latest stable version for plugins that support semver
     },
   }
 else
+  -- Make line numbers default
+  vim.opt.number = true
+  -- You can also add relative line numbers, to help with jumping.
+  --  Experiment for yourself to see if you like it!
+  -- vim.opt.relativenumber = true
+
+  -- Enable mouse mode, can be useful for resizing splits for example!
+  vim.opt.mouse = 'a'
+
   -- Don't show the mode, since it's already in the status line
   vim.opt.showmode = false
+
+  -- Minimal number of screen lines to keep above and below the cursor.
+  vim.opt.scrolloff = 10
 
   -- Sync clipboard between OS and Neovim.
   --  Schedule the setting after `UiEnter` because it can increase startup-time.
@@ -318,6 +325,7 @@ else
           { '<leader>t', group = '[T]oggle' },
           { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
           { '<leader>g', group = '[G]ithub Copilot', mode = { 'n' } },
+          { '<leader>n', group = '[N]pm Package Info', mode = { 'n' } },
         },
       },
     },
@@ -715,6 +723,8 @@ else
               })
             end,
           },
+
+          jsonls = {},
         }
 
         -- Ensure the servers and tools above are installed
@@ -737,6 +747,7 @@ else
           'css-variables-language-server',
           'eslint-lsp',
           'sql-formatter',
+          'json-lsp',
         })
         require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -981,6 +992,20 @@ else
         -- - sd'   - [S]urround [D]elete [']quotes
         -- - sr)'  - [S]urround [R]eplace [)] [']
         require('mini.surround').setup()
+
+        require('mini.move').setup {
+          mappings = {
+            left = 'H',
+            right = 'L',
+            down = 'J',
+            up = 'K',
+
+            line_left = '',
+            line_right = '',
+            line_down = '',
+            line_up = '',
+          },
+        }
 
         -- Simple and easy statusline.
         --  You could remove this setup call if you don't like it,
