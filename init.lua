@@ -419,7 +419,13 @@ end
 setup_treesitter()
 
 -- Fuzzy finding with fzf-lua
-require("fzf-lua").setup({})
+require("fzf-lua").setup({
+	keymap = {
+		fzf = {
+			["ctrl-y"] = "accept",
+		},
+	},
+})
 
 vim.keymap.set("n", "<leader>sf", function()
 	require("fzf-lua").files()
