@@ -384,9 +384,10 @@ local setup_treesitter = function()
 		"lua",
 		"markdown",
 		"typescript",
+		"tsx",
+		"jsx",
 		"svelte",
 		"bash",
-		"lua",
 	}
 
 	local config = require("nvim-treesitter.config")
@@ -686,6 +687,7 @@ vim.lsp.config("lua_ls", {
 vim.lsp.config("bashls", {})
 -- vim.lsp.config("ts_ls", {})
 vim.lsp.config("gopls", {})
+vim.lsp.config("copilot", {})
 -- vim.lsp.config("clangd", {})
 
 require("conform").setup({
@@ -750,6 +752,19 @@ vim.lsp.enable({
 	-- "clangd",
 	-- "efm",
 	"oxlint",
+	"copilot",
+})
+
+-- to support copilot
+vim.lsp.inline_completion.enable()
+vim.keymap.set("i", "<C-CR>", function()
+	if not vim.lsp.inline_completion.get() then
+		return "<C-CR>"
+	end
+end, {
+	expr = true,
+	replace_keycodes = true,
+	desc = "Get the current inline completion",
 })
 
 require("typescript-tools").setup({
@@ -772,6 +787,9 @@ require("everforest").setup({
 	ui_contrast = "high",
 	colours_override = function(palette)
 		palette.bg0 = palette.bg_dim
+	end,
+	on_highlights = function(hl, palette)
+		hl.ComplHint = { fg = palette.grey2, nocombine = true } -- lighter
 	end,
 })
 vim.cmd("colorscheme everforest")
