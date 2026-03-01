@@ -571,8 +571,12 @@ local function lsp_on_attach(ev)
 	local bufnr = ev.buf
 	local opts = { noremap = true, silent = true, buffer = bufnr }
 
-	vim.keymap.set("n", "<leader>gd", function()
-		require("fzf-lua").lsp_definitions({ jump_to_single_result = true })
+	vim.keymap.set("n", "gd", function()
+		require("fzf-lua").lsp_definitions({ jump1 = true })
+	end, opts)
+
+	vim.keymap.set("n", "gr", function()
+		require("fzf-lua").lsp_references({ jump1 = true, includeDelcaration = false })
 	end, opts)
 
 	vim.keymap.set("n", "<leader>gD", vim.lsp.buf.definition, opts)
@@ -659,7 +663,6 @@ require("blink.cmp").setup({
 			require("luasnip").lsp_expand(snippet)
 		end,
 	},
-
 	fuzzy = {
 		implementation = "prefer_rust",
 		prebuilt_binaries = { download = true },
