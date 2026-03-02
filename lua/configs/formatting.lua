@@ -6,6 +6,24 @@ vim.pack.add({
 	"https://github.com/stevearc/conform.nvim.git",
 })
 
+local oxfmt_config_cache = {}
+
+local function has_oxfmt_config(ctx)
+	local dir = ctx.dirname
+	if oxfmt_config_cache[dir] == nil then
+		oxfmt_config_cache[dir] = vim.fs.find({ ".oxfmtrc.json", ".oxfmtrc.jsonc" }, {
+			upward = true,
+			path = dir,
+		})[1] ~= nil
+	end
+	return oxfmt_config_cache[dir]
+end
+
+vim.api.nvim_create_user_command("ConformClearCache", function()
+	oxfmt_config_cache = {}
+	vim.notify("Cleared oxfmt config cache", vim.log.levels.INFO)
+end, { desc = "Clear cached oxfmt config lookups" })
+
 require("conform").setup({
 	format_on_save = function(bufnr)
 		local lsp_format_opt
@@ -29,27 +47,30 @@ require("conform").setup({
 	end,
 	formatters_by_ft = {
 		lua = { "stylua" },
-		-- Conform will run multiple formatters sequentially
-		-- python = { "isort", "black" },
-		-- You can customize some of the format options for the filetype (:help conform.format)
 		rust = { "rustfmt", lsp_format = "fallback" },
-		-- Conform will run the first available formatter
-		javascript = { "oxfmt", "oxlint" },
-		typescript = { "oxfmt", "oxlint" },
-		javascriptreact = { "oxfmt", "oxlint" },
-		typescriptreact = { "oxfmt", "oxlint" },
-		css = { "oxfmt" },
-		html = { "oxfmt" },
-		json = { "oxfmt" },
-		yaml = { "oxfmt" },
-		markdown = { "oxfmt" },
+		javascript = { "oxfmt", "prettierd", "oxlint" },
+		typescript = { "oxfmt", "prettierd", "oxlint" },
+		javascriptreact = { "oxfmt", "prettierd", "oxlint" },
+		typescriptreact = { "oxfmt", "prettierd", "oxlint" },
+		css = { "oxfmt", "prettierd" },
+		html = { "oxfmt", "prettierd" },
+		json = { "oxfmt", "prettierd" },
+		yaml = { "oxfmt", "prettierd" },
+		markdown = { "oxfmt", "prettierd" },
 		go = { "goimports", "gofmt" },
 		sql = { "sql_formatter" },
 	},
 	formatters = {
 		oxlint = {},
 		oxfmt = {
-			require_cwd = true,
+			condition = function(_, ctx)
+				return has_oxfmt_config(ctx)
+			end,
+		},
+		prettier = {
+			condition = function(_, ctx)
+				return not has_oxfmt_config(ctx)
+			end,
 		},
 	},
 	-- disabled this so that i can use oxlint to run on save without it erroring

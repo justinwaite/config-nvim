@@ -331,6 +331,7 @@ vim.lsp.enable({
 	"bashls",
 	"gopls",
 	"oxlint",
+	"eslint",
 	"jsonls",
 })
 
