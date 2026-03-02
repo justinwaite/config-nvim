@@ -20,6 +20,7 @@ require("oil").setup({
 	},
 	keymaps = {
 		["<C-v>"] = { "actions.select", opts = { vertical = true } },
+		["q"] = { "actions.close", mode = "n", opts = { vertical = true } },
 		["<Cs-u>"] = { "actions.preview_scroll_up" },
 		["<Cs-D>"] = { "actions.preview_scroll_down" },
 	},

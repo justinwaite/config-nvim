@@ -164,14 +164,13 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 	end,
 })
 
--- wrap, linebreak and spellcheck on markdown and text files
+-- wrap, linebreak on markdown and text files
 vim.api.nvim_create_autocmd("FileType", {
 	group = augroup,
 	pattern = { "markdown", "text", "gitcommit" },
 	callback = function()
 		vim.opt_local.wrap = true
 		vim.opt_local.linebreak = true
-		vim.opt_local.spell = true
 	end,
 })
 
@@ -325,12 +324,14 @@ vim.lsp.config("lua_ls", {
 
 vim.lsp.config("bashls", {})
 vim.lsp.config("gopls", {})
+vim.lsp.config("jsonls", {})
 
 vim.lsp.enable({
 	"lua_ls",
 	"bashls",
 	"gopls",
 	"oxlint",
+	"jsonls",
 })
 
 require("typescript-tools").setup({
