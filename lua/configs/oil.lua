@@ -1,6 +1,9 @@
 -- ============================================================================
 -- Oil (file explorer)
 -- ============================================================================
+vim.pack.add({
+	"https://github.com/stevearc/oil.nvim.git",
+})
 
 require("oil").setup({
 	watch_for_changes = true,
@@ -16,7 +19,6 @@ require("oil").setup({
 		end,
 	},
 	keymaps = {
-		["<Esc>"] = { "actions.close", mode = "n" },
 		["<C-v>"] = { "actions.select", opts = { vertical = true } },
 		["<Cs-u>"] = { "actions.preview_scroll_up" },
 		["<Cs-D>"] = { "actions.preview_scroll_down" },

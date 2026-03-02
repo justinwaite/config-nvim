@@ -129,7 +129,7 @@ end, { desc = "Toggle diagnostics" })
 -- AUTOCMDS
 -- ============================================================================
 
-local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
+local augroup = require("utils").augroup
 
 -- highlight yanked text
 vim.api.nvim_create_autocmd("TextYankPost", {
@@ -176,43 +176,26 @@ vim.api.nvim_create_autocmd("FileType", {
 -- ============================================================================
 
 vim.pack.add({
-	"https://www.github.com/lewis6991/gitsigns.nvim",
-	"https://www.github.com/echasnovski/mini.nvim",
-	"https://www.github.com/ibhagwan/fzf-lua",
 	{
 		src = "https://github.com/nvim-treesitter/nvim-treesitter",
 		branch = "main",
 		build = ":TSUpdate",
 	},
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
 	-- Language Server Protocols
 	"https://www.github.com/neovim/nvim-lspconfig",
 	"https://github.com/mason-org/mason.nvim",
-	{
-		src = "https://github.com/saghen/blink.cmp",
-		version = vim.version.range("1.*"),
-	},
 	"https://github.com/L3MON4D3/LuaSnip",
-	"https://github.com/stevearc/conform.nvim.git",
 	"https://github.com/nvim-lua/plenary.nvim",
 	"https://github.com/pmizio/typescript-tools.nvim",
-	"https://github.com/neanias/everforest-nvim",
-	"https://github.com/stevearc/oil.nvim.git",
 })
 
-local function packadd(name)
-	vim.cmd("packadd " .. name)
-end
+local packadd = require("utils").packadd
 
 packadd("nvim-treesitter")
-packadd("gitsigns.nvim")
-packadd("mini.nvim")
-packadd("fzf-lua")
--- packadd("nvim-tree.lua")
--- LSP
+packadd("nvim-treesitter-textobjects")
 packadd("nvim-lspconfig")
 packadd("mason.nvim")
--- packadd("efmls-configs-nvim")
-packadd("blink.cmp")
 packadd("LuaSnip")
 
 -- ============================================================================
@@ -234,12 +217,12 @@ local setup_treesitter = function()
 		"html",
 		"css",
 		"javascript",
+		"typescript",
+		"jsx",
+		"tsx",
 		"json",
 		"lua",
 		"markdown",
-		"typescript",
-		"tsx",
-		"jsx",
 		"svelte",
 		"bash",
 	}
@@ -268,116 +251,15 @@ local setup_treesitter = function()
 			end
 		end,
 	})
+
+	-- Disable entire built-in ftplugin mappings to avoid conflicts.
+	-- See https://github.com/neovim/neovim/tree/master/runtime/ftplugin for built-in ftplugins.
+	vim.g.no_plugin_maps = true
+	-- This plugin enables additional text objects for advanced selections
+	require("nvim-treesitter-textobjects").setup({})
 end
 
 setup_treesitter()
-
--- Fuzzy finding with fzf-lua
-require("fzf-lua").setup({
-	keymap = {
-		fzf = {
-			["ctrl-y"] = "accept",
-		},
-	},
-})
-
-vim.keymap.set("n", "<leader>sf", function()
-	require("fzf-lua").files()
-end, { desc = "Search files" })
-vim.keymap.set("n", "<leader>sg", function()
-	require("fzf-lua").live_grep()
-end, { desc = "Search via Live Grep" })
-vim.keymap.set("n", "<leader><leader>", function()
-	require("fzf-lua").buffers()
-end, { desc = "Search Buffers" })
-vim.keymap.set("n", "<leader>s.", function()
-	require("fzf-lua").oldfiles({ file_ignore_patterns = { "node_modules" } })
-end, { desc = "Search Recent Files" })
-vim.keymap.set("n", "<leader>sh", function()
-	require("fzf-lua").help_tags()
-end, { desc = "Search Help Tags" })
-vim.keymap.set("n", "<leader>sx", function()
-	require("fzf-lua").diagnostics_document()
-end, { desc = "Search Diagnostics Document" })
-vim.keymap.set("n", "<leader>sX", function()
-	require("fzf-lua").diagnostics_workspace()
-end, { desc = "Search Diagnostics Workspace" })
-
--- git signs
-require("gitsigns").setup({
-	signs = {
-		add = { text = "\u{2590}" }, -- ▏
-		change = { text = "\u{2590}" }, -- ▐
-		delete = { text = "\u{2590}" }, -- ◦
-		topdelete = { text = "\u{25e6}" }, -- ◦
-		changedelete = { text = "\u{25cf}" }, -- ●
-		untracked = { text = "\u{25cb}" }, -- ○
-	},
-	signcolumn = true,
-	current_line_blame = false,
-})
-
-vim.keymap.set("n", "]h", function()
-	require("gitsigns").next_hunk()
-end, { desc = "Next git hunk" })
-vim.keymap.set("n", "[h", function()
-	require("gitsigns").prev_hunk()
-end, { desc = "Previous git hunk" })
-vim.keymap.set("n", "<leader>hs", function()
-	require("gitsigns").stage_hunk()
-end, { desc = "Stage hunk" })
-vim.keymap.set("n", "<leader>hr", function()
-	require("gitsigns").reset_hunk()
-end, { desc = "Reset hunk" })
-vim.keymap.set("n", "<leader>hp", function()
-	require("gitsigns").preview_hunk()
-end, { desc = "Preview hunk" })
-vim.keymap.set("n", "<leader>hb", function()
-	require("gitsigns").blame_line({ full = true })
-end, { desc = "Blame line" })
-vim.keymap.set("n", "<leader>hB", function()
-	require("gitsigns").toggle_current_line_blame()
-end, { desc = "Toggle inline blame" })
-vim.keymap.set("n", "<leader>hd", function()
-	require("gitsigns").diffthis()
-end, { desc = "Diff this" })
-
--- mini
-require("mini.ai").setup({})
--- require("mini.comment").setup({})
-require("mini.move").setup({
-	mappings = {
-		left = "<D-h>",
-		right = "<D-l>",
-		down = "<D-j>",
-		up = "<D-k>",
-
-		line_left = "<D-h>",
-		line_right = "<D-l>",
-		line_down = "<D-j>",
-		line_up = "<D-k>",
-	},
-})
-require("mini.surround").setup({
-	n_lines = 100,
-})
-require("mini.cursorword").setup({})
-require("mini.indentscope").setup({})
-require("mini.pairs").setup({})
--- require("mini.trailspace").setup({})
-require("mini.bufremove").setup({})
--- require("mini.notify").setup({})
--- require("mini.git").setup({})
-
--- required for statusline
-require("mini.icons").setup({})
-require("mini.diff").setup({})
-
-local statusline = require("mini.statusline")
-statusline.setup({})
-statusline.section_location = function()
-	return "%2l:%-2v"
-end
 
 -- ============================================================================
 -- LSP, Linting, Formatting & Completion
@@ -422,120 +304,9 @@ do
 	end
 end
 
-local function lsp_on_attach(ev)
-	local client = vim.lsp.get_client_by_id(ev.data.client_id)
-	if not client then
-		return
-	end
-
-	local bufnr = ev.buf
-	local opts = { noremap = true, silent = true, buffer = bufnr }
-
-	vim.keymap.set("n", "gd", function()
-		require("fzf-lua").lsp_definitions({ jump1 = true })
-	end, opts)
-
-	vim.keymap.set("n", "gr", function()
-		require("fzf-lua").lsp_references({ jump1 = true, includeDelcaration = false })
-	end, opts)
-
-	vim.keymap.set("n", "<leader>gD", vim.lsp.buf.definition, opts)
-
-	vim.keymap.set("n", "<leader>gS", function()
-		vim.cmd("vsplit")
-		vim.lsp.buf.definition()
-	end, opts)
-
-	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-
-	vim.keymap.set("n", "<leader>D", function()
-		vim.diagnostic.open_float({ scope = "line" })
-	end, opts)
-	vim.keymap.set("n", "<leader>d", function()
-		vim.diagnostic.open_float({ scope = "cursor" })
-	end, opts)
-	vim.keymap.set("n", "<leader>nd", function()
-		vim.diagnostic.jump({ count = 1 })
-	end, opts)
-
-	vim.keymap.set("n", "<leader>pd", function()
-		vim.diagnostic.jump({ count = -1 })
-	end, opts)
-
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-
-	vim.keymap.set("n", "<leader>fd", function()
-		require("fzf-lua").lsp_definitions({ jump_to_single_result = true })
-	end, opts)
-	vim.keymap.set("n", "<leader>fr", function()
-		require("fzf-lua").lsp_references()
-	end, opts)
-	vim.keymap.set("n", "<leader>ft", function()
-		require("fzf-lua").lsp_typedefs()
-	end, opts)
-	vim.keymap.set("n", "<leader>fs", function()
-		require("fzf-lua").lsp_document_symbols()
-	end, opts)
-	vim.keymap.set("n", "<leader>fw", function()
-		require("fzf-lua").lsp_workspace_symbols()
-	end, opts)
-	vim.keymap.set("n", "<leader>fi", function()
-		require("fzf-lua").lsp_implementations()
-	end, opts)
-
-	if client:supports_method("textDocument/codeAction", bufnr) then
-		vim.keymap.set("n", "<leader>oi", function()
-			vim.lsp.buf.code_action({
-				context = { only = { "source.organizeImports" }, diagnostics = {} },
-				apply = true,
-				bufnr = bufnr,
-			})
-			vim.defer_fn(function()
-				vim.lsp.buf.format({ bufnr = bufnr })
-			end, 50)
-		end, opts)
-	end
-end
-
-vim.api.nvim_create_autocmd("LspAttach", { group = augroup, callback = lsp_on_attach })
-
 vim.keymap.set("n", "<leader>q", function()
 	vim.diagnostic.setloclist({ open = true })
 end, { desc = "Open diagnostic list" })
-vim.keymap.set("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
-
-require("blink.cmp").setup({
-	keymap = {
-		preset = "none",
-		["<C-Space>"] = { "show", "hide" },
-		["<C-y>"] = { "accept", "fallback" },
-		["<C-n>"] = { "select_next", "fallback" },
-		["<C-p>"] = { "select_prev", "fallback" },
-		["<Tab>"] = { "snippet_forward", "fallback" },
-		["<S-Tab>"] = { "snippet_backward", "fallback" },
-	},
-	appearance = { nerd_font_variant = "mono" },
-	completion = { menu = { auto_show = true } },
-	sources = { default = { "lsp", "path", "buffer", "snippets" } },
-	snippets = {
-		expand = function(snippet)
-			require("luasnip").lsp_expand(snippet)
-		end,
-	},
-	fuzzy = {
-		implementation = "prefer_rust",
-		prebuilt_binaries = { download = true },
-	},
-	signature = {
-		enabled = true,
-		window = { show_documentation = true },
-	},
-})
-
-vim.lsp.config["*"] = {
-	capabilities = require("blink.cmp").get_lsp_capabilities(),
-}
 
 vim.lsp.config("lua_ls", {
 	settings = {
@@ -546,88 +317,14 @@ vim.lsp.config("lua_ls", {
 	},
 })
 
--- vim.lsp.config("pyright", {})
 vim.lsp.config("bashls", {})
--- vim.lsp.config("ts_ls", {})
 vim.lsp.config("gopls", {})
-vim.lsp.config("copilot", {})
--- vim.lsp.config("clangd", {})
-
-require("conform").setup({
-	format_on_save = function(bufnr)
-		local lsp_format_opt
-
-		-- Disable formatting on save entirely for certain filetypes
-		-- I disable for sql since there are many dialects and times where you
-		-- just don't want it.
-		local disable_format_on_save_filetypes = { sql = true }
-		local dry_run = false
-		if disable_format_on_save_filetypes[vim.bo[bufnr].filetype] then
-			dry_run = true
-		end
-
-		local options = {
-			timeout_ms = 500,
-			lsp_format = lsp_format_opt,
-			dry_run = dry_run,
-		}
-
-		return options
-	end,
-	formatters_by_ft = {
-		lua = { "stylua" },
-		-- Conform will run multiple formatters sequentially
-		-- python = { "isort", "black" },
-		-- You can customize some of the format options for the filetype (:help conform.format)
-		rust = { "rustfmt", lsp_format = "fallback" },
-		-- Conform will run the first available formatter
-		javascript = { "oxfmt", "oxlint" },
-		typescript = { "oxfmt", "oxlint" },
-		javascriptreact = { "oxfmt", "oxlint" },
-		typescriptreact = { "oxfmt", "oxlint" },
-		css = { "oxfmt" },
-		html = { "oxfmt" },
-		json = { "oxfmt" },
-		yaml = { "oxfmt" },
-		markdown = { "oxfmt" },
-		go = { "goimports", "gofmt" },
-		sql = { "sql_formatter" },
-	},
-	formatters = {
-		oxlint = {},
-		oxfmt = {
-			require_cwd = true,
-		},
-	},
-	notify_on_error = false,
-})
-
-vim.keymap.set("n", "<leader>f", function()
-	require("conform").format({ async = true, lsp_format = "fallback" })
-end, { desc = "Show line diagnostics" })
 
 vim.lsp.enable({
 	"lua_ls",
-	-- "pyright",
 	"bashls",
-	-- "ts_ls",
 	"gopls",
-	-- "clangd",
-	-- "efm",
 	"oxlint",
-	"copilot",
-})
-
--- to support copilot
-vim.lsp.inline_completion.enable()
-vim.keymap.set("i", "<C-CR>", function()
-	if not vim.lsp.inline_completion.get() then
-		return "<C-CR>"
-	end
-end, {
-	expr = true,
-	replace_keycodes = true,
-	desc = "Get the current inline completion",
 })
 
 require("typescript-tools").setup({
@@ -643,112 +340,11 @@ require("typescript-tools").setup({
 	},
 })
 
--- Theme setup
-require("everforest").setup({
-	background = "hard",
-	float_style = "bright",
-	ui_contrast = "high",
-	colours_override = function(palette)
-		palette.bg0 = palette.bg_dim
-	end,
-	on_highlights = function(hl, palette)
-		hl.ComplHint = { fg = palette.grey2, nocombine = true } -- lighter
-	end,
-})
-vim.cmd("colorscheme everforest")
-
--- ============================================================================
--- FLOATING TERMINAL
--- ============================================================================
-vim.api.nvim_create_autocmd("TermClose", {
-	group = augroup,
-	callback = function()
-		if vim.v.event.status == 0 then
-			vim.api.nvim_buf_delete(0, {})
-		end
-	end,
-})
-
-vim.api.nvim_create_autocmd("TermOpen", {
-	group = augroup,
-	callback = function()
-		vim.opt_local.number = false
-		vim.opt_local.relativenumber = false
-		vim.opt_local.signcolumn = "no"
-	end,
-})
-
-local terminal_state = { buf = nil, win = nil, is_open = false }
-
-local function FloatingTerminal()
-	if terminal_state.is_open and terminal_state.win and vim.api.nvim_win_is_valid(terminal_state.win) then
-		vim.api.nvim_win_close(terminal_state.win, false)
-		terminal_state.is_open = false
-		return
-	end
-
-	if not terminal_state.buf or not vim.api.nvim_buf_is_valid(terminal_state.buf) then
-		terminal_state.buf = vim.api.nvim_create_buf(false, true)
-		vim.bo[terminal_state.buf].bufhidden = "hide"
-	end
-
-	local width = math.floor(vim.o.columns * 0.8)
-	local height = math.floor(vim.o.lines * 0.8)
-	local row = math.floor((vim.o.lines - height) / 2)
-	local col = math.floor((vim.o.columns - width) / 2)
-
-	terminal_state.win = vim.api.nvim_open_win(terminal_state.buf, true, {
-		relative = "editor",
-		width = width,
-		height = height,
-		row = row,
-		col = col,
-		style = "minimal",
-		border = "rounded",
-	})
-
-	vim.wo[terminal_state.win].winblend = 0
-	vim.wo[terminal_state.win].winhighlight = "Normal:FloatingTermNormal,FloatBorder:FloatingTermBorder"
-	vim.api.nvim_set_hl(0, "FloatingTermNormal", { bg = "none" })
-	vim.api.nvim_set_hl(0, "FloatingTermBorder", { bg = "none" })
-
-	local has_terminal = false
-	local lines = vim.api.nvim_buf_get_lines(terminal_state.buf, 0, -1, false)
-	for _, line in ipairs(lines) do
-		if line ~= "" then
-			has_terminal = true
-			break
-		end
-	end
-	if not has_terminal then
-		vim.fn.termopen(os.getenv("SHELL"))
-	end
-
-	terminal_state.is_open = true
-	vim.cmd("startinsert")
-
-	vim.api.nvim_create_autocmd("BufLeave", {
-		buffer = terminal_state.buf,
-		callback = function()
-			if terminal_state.is_open and terminal_state.win and vim.api.nvim_win_is_valid(terminal_state.win) then
-				vim.api.nvim_win_close(terminal_state.win, false)
-				terminal_state.is_open = false
-			end
-		end,
-		once = true,
-	})
-end
-
-vim.keymap.set("n", "<leader>t", FloatingTerminal, { noremap = true, silent = true, desc = "Toggle floating terminal" })
-vim.keymap.set("t", "<Esc>", function()
-	if terminal_state.is_open and terminal_state.win and vim.api.nvim_win_is_valid(terminal_state.win) then
-		vim.api.nvim_win_close(terminal_state.win, false)
-		terminal_state.is_open = false
-	end
-end, { noremap = true, silent = true, desc = "Close floating terminal" })
-
 -- ============================================================================
 -- LOAD CONFIGS
+-- Auto-requires all .lua files in the lua/configs directory. Allows for cleaner
+-- organization of plugin configs and other settings without cluttering the main
+-- init.lua.
 -- ============================================================================
 for _, file in ipairs(vim.fn.globpath(vim.fn.stdpath("config") .. "/lua/configs", "*.lua", false, true)) do
 	require("configs." .. vim.fn.fnamemodify(file, ":t:r"))
