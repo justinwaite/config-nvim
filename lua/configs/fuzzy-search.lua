@@ -70,6 +70,13 @@ local function lsp_on_attach(ev)
 
 	vim.keymap.set("n", "<leader>ca", function()
 		require("fzf-lua").lsp_code_actions({
+			winopts = {
+				relative = "cursor",
+				row = 1,
+				col = 0,
+				height = 12,
+				width = 60,
+			},
 			previewer = false,
 		})
 	end, opts)
