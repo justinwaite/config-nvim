@@ -4,9 +4,11 @@
 -- ============================================================================
 vim.pack.add({
 	"https://github.com/windwp/nvim-ts-autotag",
+	"https://github.com/windwp/nvim-autopairs",
 })
 
 require("utils").packadd("nvim-ts-autotag")
+require("utils").packadd("nvim-autopairs")
 
 require("nvim-ts-autotag").setup({
 	opts = {
@@ -15,3 +17,5 @@ require("nvim-ts-autotag").setup({
 		enable_close_on_slash = true, -- Auto close on trailing </
 	},
 })
+
+require("nvim-autopairs").setup({ map_cr = true })

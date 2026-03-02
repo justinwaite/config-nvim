@@ -165,7 +165,7 @@ for _, language in ipairs({ "typescript", "javascript", "typescriptreact", "java
 			name = "Attach (by app port)",
 			port = function()
 				return coroutine.create(function(dap_run_co)
-					vim.ui.input({ prompt = "App port: ", default = "3000" }, function(input)
+					vim.ui.input({ prompt = "App port: ", default = "5173" }, function(input)
 						if not input or input == "" then
 							coroutine.resume(dap_run_co, dap.ABORT)
 							return

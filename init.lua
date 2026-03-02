@@ -81,6 +81,10 @@ vim.opt.maxmempattern = 20000
 vim.g.mapleader = " " -- space for leader
 vim.g.maplocalleader = " " -- space for localleader
 
+-- moving through tabs
+vim.keymap.set("n", "]t", "<cmd>tabnext<CR>", { desc = "Next tab" })
+vim.keymap.set("n", "[t", "<cmd>tabprevious<CR>", { desc = "Previous tab" })
+
 -- better movement in wrapped text
 vim.keymap.set("n", "j", function()
 	return vim.v.count == 0 and "gj" or "j"
@@ -249,6 +253,8 @@ local setup_treesitter = function()
 			if vim.list_contains(treesitter.get_installed(), vim.treesitter.language.get_lang(args.match)) then
 				vim.treesitter.start(args.buf)
 			end
+
+			vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 		end,
 	})
 

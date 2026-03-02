@@ -24,8 +24,23 @@ require("blink.cmp").setup({
 		["<S-Tab>"] = { "snippet_backward", "fallback" },
 	},
 	appearance = { nerd_font_variant = "mono" },
-	completion = { menu = { auto_show = true } },
-	sources = { default = { "lsp", "path", "buffer", "snippets" } },
+	completion = {
+		menu = { auto_show = true },
+		documentation = {
+			auto_show = true,
+			auto_show_delay_ms = 500,
+		},
+	},
+	sources = {
+		default = { "lsp", "path", "buffer", "snippets" },
+		per_filetype = {
+			sql = { "dadbod", "buffer" },
+		},
+		-- add vim-dadbod-completion to your completion providers
+		providers = {
+			dadbod = { name = "Dadbod", module = "vim_dadbod_completion.blink" },
+		},
+	},
 	snippets = {
 		expand = function(snippet)
 			require("luasnip").lsp_expand(snippet)

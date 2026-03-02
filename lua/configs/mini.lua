@@ -47,7 +47,6 @@ require("mini.surround").setup({
 })
 require("mini.cursorword").setup({})
 require("mini.indentscope").setup({})
-require("mini.pairs").setup({})
 require("mini.bufremove").setup({})
 
 -- required for statusline
