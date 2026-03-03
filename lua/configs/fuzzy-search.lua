@@ -30,7 +30,11 @@ vim.keymap.set("n", "<leader><leader>", function()
 	require("fzf-lua").buffers()
 end, { desc = "Search Buffers" })
 vim.keymap.set("n", "<leader>s.", function()
-	require("fzf-lua").oldfiles({ file_ignore_patterns = { "node_modules" } })
+	require("fzf-lua").oldfiles({
+		file_ignore_patterns = { "node_modules" },
+		cwd_only = true,
+		include_current_session = true,
+	})
 end, { desc = "Search Recent Files" })
 vim.keymap.set("n", "<leader>sh", function()
 	require("fzf-lua").help_tags()
