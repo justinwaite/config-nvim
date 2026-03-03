@@ -8,6 +8,8 @@ vim.pack.add({
 
 local oxfmt_config_cache = {}
 
+-- oxfmt formatting is handled by the lsp, which is faster than integrating with
+-- conform, since conform has to pay startup time every time it runs.
 local function has_oxfmt_config(ctx)
 	local dir = ctx.dirname
 	if oxfmt_config_cache[dir] == nil then
@@ -25,9 +27,8 @@ vim.api.nvim_create_user_command("ConformClearCache", function()
 end, { desc = "Clear cached oxfmt config lookups" })
 
 require("conform").setup({
+	log_level = vim.log.levels.DEBUG,
 	format_on_save = function(bufnr)
-		local lsp_format_opt
-
 		-- Disable formatting on save entirely for certain filetypes
 		-- I disable for sql since there are many dialects and times where you
 		-- just don't want it.
@@ -39,7 +40,8 @@ require("conform").setup({
 
 		local options = {
 			timeout_ms = 500,
-			lsp_format = lsp_format_opt,
+			-- lsp_format = "fallback" allows conform to use oxfmt via the lsp
+			lsp_format = "fallback",
 			dry_run = dry_run,
 		}
 
@@ -47,24 +49,23 @@ require("conform").setup({
 	end,
 	formatters_by_ft = {
 		lua = { "stylua" },
-		rust = { "rustfmt", lsp_format = "fallback" },
-		javascript = { "oxfmt", "prettierd", "oxlint" },
-		typescript = { "oxfmt", "prettierd", "oxlint" },
-		javascriptreact = { "oxfmt", "prettierd", "oxlint" },
-		typescriptreact = { "oxfmt", "prettierd", "oxlint" },
-		css = { "oxfmt", "prettierd" },
-		html = { "oxfmt", "prettierd" },
-		json = { "oxfmt", "prettierd" },
-		yaml = { "oxfmt", "prettierd" },
-		markdown = { "oxfmt", "prettierd" },
+		rust = { "rustfmt" },
+		javascript = { "prettierd", "prettier", stop_after_first = true },
+		typescript = { "prettierd", "prettier", stop_after_first = true },
+		javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+		typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+		css = { "prettierd", "prettier", stop_after_first = true },
+		html = { "prettierd", "prettier", stop_after_first = true },
+		json = { "prettierd", "prettier", stop_after_first = true },
+		yaml = { "prettierd", "prettier", stop_after_first = true },
+		markdown = { "prettierd", "prettier", stop_after_first = true },
 		go = { "goimports", "gofmt" },
 		sql = { "sql_formatter" },
 	},
 	formatters = {
-		oxlint = {},
-		oxfmt = {
+		prettierd = {
 			condition = function(_, ctx)
-				return has_oxfmt_config(ctx)
+				return not has_oxfmt_config(ctx)
 			end,
 		},
 		prettier = {
@@ -78,6 +79,8 @@ require("conform").setup({
 	notify_on_error = false,
 })
 
+-- I like to have a keybinding to format on demand as well
 vim.keymap.set("n", "<leader>f", function()
+	-- lsp_format = "fallback" allows conform to use oxfmt via the lsp
 	require("conform").format({ async = true, lsp_format = "fallback" })
 end, { desc = "Format the buffer" })
