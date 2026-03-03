@@ -144,7 +144,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- return to last cursor position
+-- restore last cursor position when reopening a file, except in diff mode
 vim.api.nvim_create_autocmd("BufReadPost", {
 	group = augroup,
 	desc = "Restore last cursor position",
@@ -187,6 +187,7 @@ vim.pack.add({
 	},
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
 	"https://github.com/mason-org/mason.nvim",
+	"https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim",
 	"https://github.com/L3MON4D3/LuaSnip",
 	"https://github.com/nvim-lua/plenary.nvim",
 })
@@ -196,10 +197,31 @@ local packadd = require("utils").packadd
 packadd("nvim-treesitter")
 packadd("nvim-treesitter-textobjects")
 packadd("mason.nvim")
+packadd("mason-tool-installer")
 packadd("LuaSnip")
 
 -- mason for installing stuff
 require("mason").setup({})
+require("mason-tool-installer").setup({
+	ensure_installed = {
+		"vtsls",
+		"eslint_d",
+		"prettierd",
+		"copilot-language-server",
+		"css-lsp",
+		"css-variables-language-server",
+		"eslint-lsp",
+		"js-debug-adapter",
+		"json-lsp",
+		"lua-language-server",
+		"markdownlint",
+		"oxfmt",
+		"oxlint",
+		"sql-formatter",
+		"stylua",
+		"tailwindcss-language-server",
+	},
+})
 
 -- treesitter for syntax parsing
 local setup_treesitter = function()
