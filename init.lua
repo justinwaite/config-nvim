@@ -331,6 +331,22 @@ vim.lsp.config("jsonls", {
 		provideFormatter = false,
 	},
 })
+vim.lsp.config("tailwindcss", {})
+
+-- oxlint fix on save
+local oxlint_on_attach = vim.lsp.config.oxlint.on_attach
+vim.lsp.config("oxlint", {
+	on_attach = function(client, bufnr)
+		if oxlint_on_attach then
+			oxlint_on_attach(client, bufnr)
+		end
+
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			buffer = bufnr,
+			command = "LspOxlintFixAll",
+		})
+	end,
+})
 
 vim.lsp.enable({
 	"lua_ls",
@@ -340,6 +356,7 @@ vim.lsp.enable({
 	"oxfmt",
 	"eslint",
 	"jsonls",
+	"tailwindcss",
 })
 
 require("typescript-tools").setup({
@@ -357,22 +374,6 @@ require("typescript-tools").setup({
 		-- disable tsserver's formatting capabilities since we use oxfmt and prettier for that
 		client.server_capabilities.documentFormattingProvider = false
 		client.server_capabilities.documentRangeFormattingProvider = false
-	end,
-})
-
--- oxlint fix on save
-local base_on_attach = vim.lsp.config.eslint.on_attach
-vim.lsp.config("oxlint", {
-	on_attach = function(client, bufnr)
-		if not base_on_attach then
-			return
-		end
-
-		base_on_attach(client, bufnr)
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			buffer = bufnr,
-			command = "LspOxlintFixAll",
-		})
 	end,
 })
 

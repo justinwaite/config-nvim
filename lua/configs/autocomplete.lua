@@ -25,7 +25,19 @@ require("blink.cmp").setup({
 	},
 	appearance = { nerd_font_variant = "mono" },
 	completion = {
-		menu = { auto_show = true },
+		menu = {
+			auto_show = true,
+			draw = {
+				columns = {
+					{
+						"label",
+						"label_description",
+						gap = 1,
+					},
+					{ "kind_icon", "kind" },
+				},
+			},
+		},
 		documentation = {
 			auto_show = true,
 			auto_show_delay_ms = 500,
@@ -39,6 +51,21 @@ require("blink.cmp").setup({
 		-- add vim-dadbod-completion to your completion providers
 		providers = {
 			dadbod = { name = "Dadbod", module = "vim_dadbod_completion.blink" },
+			lsp = {
+				transform_items = function(_, items)
+					for _, item in ipairs(items) do
+						if item.client_name == "typescript-tools" then
+							local source = vim.tbl_get(item, "data", "entryNames", 1, "source")
+							if source then
+								item.labelDetails = item.labelDetails or {}
+								item.labelDetails.description = source
+							end
+						end
+					end
+
+					return items
+				end,
+			},
 		},
 	},
 	snippets = {
