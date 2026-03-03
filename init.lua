@@ -76,7 +76,8 @@ vim.opt.redrawtime = 10000
 vim.opt.maxmempattern = 20000
 
 -- ============================================================================
--- KEYMAPS
+-- GENERAL KEYMAPS
+-- There are more keymaps sprinkled in the various plugin configs.
 -- ============================================================================
 vim.g.mapleader = " " -- space for leader
 vim.g.maplocalleader = " " -- space for localleader
@@ -175,7 +176,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- ============================================================================
--- PLUGINS (vim.pack)
+-- TREESITTER
 -- ============================================================================
 
 vim.pack.add({
@@ -185,8 +186,6 @@ vim.pack.add({
 		build = ":TSUpdate",
 	},
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
-	-- Language Server Protocols
-	"https://www.github.com/neovim/nvim-lspconfig",
 	"https://github.com/mason-org/mason.nvim",
 	"https://github.com/L3MON4D3/LuaSnip",
 	"https://github.com/nvim-lua/plenary.nvim",
@@ -196,13 +195,8 @@ local packadd = require("utils").packadd
 
 packadd("nvim-treesitter")
 packadd("nvim-treesitter-textobjects")
-packadd("nvim-lspconfig")
 packadd("mason.nvim")
 packadd("LuaSnip")
-
--- ============================================================================
--- PLUGIN CONFIGS
--- ============================================================================
 
 -- mason for installing stuff
 require("mason").setup({})
@@ -264,107 +258,6 @@ local setup_treesitter = function()
 end
 
 setup_treesitter()
-
--- ============================================================================
--- LSP, Linting, Formatting & Completion
--- ============================================================================
-
-local diagnostic_signs = {
-	Error = " ",
-	Warn = " ",
-	Hint = "",
-	Info = "",
-}
-
-vim.diagnostic.config({
-	virtual_text = { prefix = "●", spacing = 4 },
-	signs = {
-		text = {
-			[vim.diagnostic.severity.ERROR] = diagnostic_signs.Error,
-			[vim.diagnostic.severity.WARN] = diagnostic_signs.Warn,
-			[vim.diagnostic.severity.INFO] = diagnostic_signs.Info,
-			[vim.diagnostic.severity.HINT] = diagnostic_signs.Hint,
-		},
-	},
-	underline = true,
-	update_in_insert = false,
-	severity_sort = true,
-	float = {
-		border = "rounded",
-		source = "always",
-		header = "",
-		prefix = "",
-		focusable = false,
-		style = "minimal",
-	},
-})
-
-do
-	local orig = vim.lsp.util.open_floating_preview
-	function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-		opts = opts or {}
-		opts.border = opts.border or "rounded"
-		return orig(contents, syntax, opts, ...)
-	end
-end
-
-vim.keymap.set("n", "<leader>q", function()
-	vim.diagnostic.setloclist({ open = true })
-end, { desc = "Open diagnostic list" })
-
-vim.lsp.config("lua_ls", {
-	settings = {
-		Lua = {
-			diagnostics = { globals = { "vim" } },
-			telemetry = { enable = false },
-		},
-	},
-})
-
-vim.lsp.config("bashls", {})
-vim.lsp.config("gopls", {})
-vim.lsp.config("oxfmt", {})
-vim.lsp.config("vtsls", {
-	on_attach = function(client)
-		-- disable tsserver's formatting capabilities since we use oxfmt and prettier for that
-		client.server_capabilities.documentFormattingProvider = false
-		client.server_capabilities.documentRangeFormattingProvider = false
-	end,
-})
-vim.lsp.config("jsonls", {
-	init_options = {
-		-- disable in favor of oxfmt and prettier
-		provideFormatter = false,
-	},
-})
-vim.lsp.config("tailwindcss", {})
-
--- oxlint fix on save
-local oxlint_on_attach = vim.lsp.config.oxlint.on_attach
-vim.lsp.config("oxlint", {
-	on_attach = function(client, bufnr)
-		if oxlint_on_attach then
-			oxlint_on_attach(client, bufnr)
-		end
-
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			buffer = bufnr,
-			command = "LspOxlintFixAll",
-		})
-	end,
-})
-
-vim.lsp.enable({
-	"lua_ls",
-	"bashls",
-	"gopls",
-	"oxlint",
-	"oxfmt",
-	"eslint",
-	"jsonls",
-	"tailwindcss",
-	"vtsls",
-})
 
 -- ============================================================================
 -- LOAD CONFIGS
