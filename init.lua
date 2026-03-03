@@ -190,7 +190,6 @@ vim.pack.add({
 	"https://github.com/mason-org/mason.nvim",
 	"https://github.com/L3MON4D3/LuaSnip",
 	"https://github.com/nvim-lua/plenary.nvim",
-	"https://github.com/pmizio/typescript-tools.nvim",
 })
 
 local packadd = require("utils").packadd
@@ -325,6 +324,13 @@ vim.lsp.config("lua_ls", {
 vim.lsp.config("bashls", {})
 vim.lsp.config("gopls", {})
 vim.lsp.config("oxfmt", {})
+vim.lsp.config("vtsls", {
+	on_attach = function(client)
+		-- disable tsserver's formatting capabilities since we use oxfmt and prettier for that
+		client.server_capabilities.documentFormattingProvider = false
+		client.server_capabilities.documentRangeFormattingProvider = false
+	end,
+})
 vim.lsp.config("jsonls", {
 	init_options = {
 		-- disable in favor of oxfmt and prettier
@@ -357,24 +363,7 @@ vim.lsp.enable({
 	"eslint",
 	"jsonls",
 	"tailwindcss",
-})
-
-require("typescript-tools").setup({
-	settings = {
-		complete_function_calls = false,
-		expose_as_code_action = {
-			"fix_all",
-			"add_missing_imports",
-			"remove_unused",
-			"remove_unused_imports",
-			"organize_imports",
-		},
-	},
-	on_attach = function(client)
-		-- disable tsserver's formatting capabilities since we use oxfmt and prettier for that
-		client.server_capabilities.documentFormattingProvider = false
-		client.server_capabilities.documentRangeFormattingProvider = false
-	end,
+	"vtsls",
 })
 
 -- ============================================================================

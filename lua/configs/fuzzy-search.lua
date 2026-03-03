@@ -72,8 +72,11 @@ local function lsp_on_attach(ev)
 		vim.lsp.buf.definition()
 	end, opts)
 
-	vim.keymap.set("n", "<leader>ca", function()
+	vim.keymap.set({ "n", "v" }, "<leader>ca", function()
 		require("fzf-lua").lsp_code_actions({
+			filter = function(action)
+				return not action.disabled
+			end,
 			winopts = {
 				relative = "cursor",
 				row = 1,
