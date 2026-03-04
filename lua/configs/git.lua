@@ -45,8 +45,8 @@ vim.keymap.set("n", "<leader>hd", function()
 	require("gitsigns").diffthis()
 end, { desc = "Diff this" })
 
-vim.keymap.set("n", "<leader>ho", "<cmd>DiffviewOpen<cr>", { desc = "Open Diffview" })
-vim.keymap.set("n", "<leader>hc", "<cmd>DiffviewClose<cr>", { desc = "Close Diffview" })
+vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Open Diffview" })
+vim.keymap.set("n", "<leader>gc", "<cmd>DiffviewClose<cr>", { desc = "Close Diffview" })
 vim.keymap.set(
 	"n",
 	"<leader>hu",
