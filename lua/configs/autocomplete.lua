@@ -61,6 +61,11 @@ require("blink.cmp").setup({
 								item.labelDetails.description = source
 							end
 						end
+
+						local desc = vim.tbl_get(item, "labelDetails", "description")
+						if desc and desc:match("^[%.~]") then
+							item.score_offset = (item.score_offset or 0) + 5
+						end
 					end
 
 					return items
