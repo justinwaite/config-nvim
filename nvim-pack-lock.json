@@ -29,6 +29,10 @@
       "rev": "9f3c6dd7868bcc116e9c1c1929ce063b978fa519",
       "src": "https://www.github.com/lewis6991/gitsigns.nvim"
     },
+    "mason-tool-installer.nvim": {
+      "rev": "443f1ef8b5e6bf47045cb2217b6f748a223cf7dc",
+      "src": "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim"
+    },
     "mason.nvim": {
       "rev": "44d1e90e1f66e077268191e3ee9d2ac97cc18e65",
       "src": "https://github.com/mason-org/mason.nvim"
@@ -36,6 +40,10 @@
     "mini.nvim": {
       "rev": "0098de999048af0539183d625c52d733318a441b",
       "src": "https://www.github.com/echasnovski/mini.nvim"
+    },
+    "multicursor.nvim": {
+      "rev": "811681faf44d8031685614cc00a148cd3ece697c",
+      "src": "https://github.com/jake-stewart/multicursor.nvim"
     },
     "nvim-autopairs": {
       "rev": "59bce2eef357189c3305e25bc6dd2d138c1683f5",

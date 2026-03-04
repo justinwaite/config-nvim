@@ -197,7 +197,7 @@ local packadd = require("utils").packadd
 packadd("nvim-treesitter")
 packadd("nvim-treesitter-textobjects")
 packadd("mason.nvim")
-packadd("mason-tool-installer")
+packadd("mason-tool-installer.nvim")
 packadd("LuaSnip")
 
 -- mason for installing stuff
