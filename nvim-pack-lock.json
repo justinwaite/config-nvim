@@ -69,6 +69,10 @@
       "rev": "21f5324bfac14e22ba26553caf69ec76ae8a7662",
       "src": "https://github.com/nvim-neotest/nvim-nio"
     },
+    "nvim-scrollview": {
+      "rev": "0efc4e82094dbda2e411f7c8d44928716d00b655",
+      "src": "https://github.com/dstein64/nvim-scrollview"
+    },
     "nvim-treesitter": {
       "rev": "6bc51d020a5e06b7e20ea82dbc47196d3d3027c7",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
