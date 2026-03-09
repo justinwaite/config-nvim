@@ -243,7 +243,30 @@ local function format_results(data, stdout, stderr, opts)
 	local hide_skipped = opts and opts.hide_skipped
 
 	for _, suite in ipairs(data.testResults) do
-		for _, test in ipairs(suite.assertionResults or {}) do
+		local assertions = suite.assertionResults or {}
+
+		if #assertions == 0 and suite.message and suite.message ~= "" then
+			local name = suite.name or "unknown suite"
+			if state.last_cwd and name:find(state.last_cwd, 1, true) == 1 then
+				name = name:sub(#state.last_cwd + 2)
+			end
+			table.insert(lines, "  ✗  " .. name)
+			table.insert(highlights, { #lines, "DiagnosticError", 0, -1 })
+			locations[#lines] = { file = suite.name, line = 1 }
+			table.insert(lines, "")
+			for fline in strip_ansi(suite.message):gmatch("[^\n]+") do
+				table.insert(lines, "      " .. fline)
+				table.insert(highlights, { #lines, "DiagnosticError", 0, -1 })
+				local fpath, flinenum = parse_stack_location(fline)
+				if fpath and flinenum then
+					locations[#lines] = { file = fpath, line = flinenum }
+				end
+			end
+			table.insert(lines, "")
+			goto next_suite
+		end
+
+		for _, test in ipairs(assertions) do
 			local is_pass = test.status == "passed"
 			local is_skip = test.status == "pending" or test.status == "skipped"
 			if hide_skipped and is_skip then
@@ -294,6 +317,7 @@ local function format_results(data, stdout, stderr, opts)
 			end
 			::continue::
 		end
+		::next_suite::
 	end
 
 	return lines, highlights, locations

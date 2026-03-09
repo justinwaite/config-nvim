@@ -28,7 +28,6 @@ require("mini.ai").setup({
 	},
 })
 
--- require("mini.comment").setup({})
 require("mini.move").setup({
 	mappings = {
 		left = "<D-h>",
