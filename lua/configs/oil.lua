@@ -25,4 +25,4 @@ require("oil").setup({
 		["<Cs-D>"] = { "actions.preview_scroll_down" },
 	},
 })
-vim.keymap.set("n", "-", "<cmd>Oil --float<CR>")
+vim.keymap.set("n", "-", "<cmd>Oil<CR>")
